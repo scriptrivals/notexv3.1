@@ -1,89 +1,86 @@
--- NO TEXTURE TRIET DE + GALAXY SKY (HARD LOCK)
--- Client-side only | For games that reset Lighting (Arena-style)
+-- NO TEXTURE (GIU NGUYEN) + BEACH SKYBOX
+-- Server-side | 1 script duy nhat
 
-local RunService = game:GetService("RunService")
 local Lighting = game:GetService("Lighting")
+local Workspace = game:GetService("Workspace")
 
 --------------------------------------------------
--- NO TEXTURE (HARD)
+-- NO TEXTURE (GIU NGUYEN)
 --------------------------------------------------
-local function applyNoTexture(obj)
-    for _,v in ipairs(obj:GetDescendants()) do
-        if v:IsA("BasePart") then
-            v.Material = Enum.Material.Plastic
-            v.Reflectance = 0
-            v.CastShadow = false
-
-            if v:IsA("MeshPart") then
-                v.TextureID = ""
-            end
-
-        elseif v:IsA("Decal") or v:IsA("Texture") then
-            v.Transparency = 1
-
-        elseif v:IsA("SurfaceAppearance") then
-            v.ColorMap = ""
-            v.NormalMap = ""
-            v.RoughnessMap = ""
-            v.MetalnessMap = ""
-
-        elseif v:IsA("SpecialMesh") then
-            v.TextureId = ""
-
-        elseif v:IsA("ParticleEmitter")
-        or v:IsA("Trail")
-        or v:IsA("Beam")
-        or v:IsA("Smoke")
-        or v:IsA("Fire") then
-            v.Enabled = false
-        end
-    end
+local function applyNoTexture(root)
+	for _,v in ipairs(root:GetDescendants()) do
+		if v:IsA("BasePart") then
+			v.Material = Enum.Material.Plastic
+			v.Reflectance = 0
+			v.CastShadow = false
+			if v:IsA("MeshPart") then
+				v.TextureID = ""
+			end
+		elseif v:IsA("Decal") or v:IsA("Texture") then
+			v.Transparency = 1
+		elseif v:IsA("SurfaceAppearance") then
+			v.ColorMap = ""
+			v.NormalMap = ""
+			v.RoughnessMap = ""
+			v.MetalnessMap = ""
+		elseif v:IsA("SpecialMesh") then
+			v.TextureId = ""
+		elseif v:IsA("ParticleEmitter")
+			or v:IsA("Trail")
+			or v:IsA("Beam")
+			or v:IsA("Smoke")
+			or v:IsA("Fire") then
+			v.Enabled = false
+		end
+	end
 end
 
--- ép toàn map
-applyNoTexture(workspace)
+-- ap dung lan dau
+applyNoTexture(Workspace)
 
--- ép mọi thứ spawn sau (map arena load lại)
-workspace.DescendantAdded:Connect(function(o)
-    task.wait()
-    applyNoTexture(o)
+-- bat moi thu spawn sau
+Workspace.DescendantAdded:Connect(function(obj)
+	task.wait()
+	applyNoTexture(obj)
 end)
 
 --------------------------------------------------
--- GALAXY SKY (HARD LOCK)
+-- BEACH SKYBOX (SERVER HARD FIX)
 --------------------------------------------------
-local SKY_NAME = "FORCED_GALAXY_SKY"
+local SKY_NAME = "BeachSky"
 
-local function forceGalaxySky()
-    if Lighting:FindFirstChild(SKY_NAME) then return end
+local function applyBeachSky()
+	-- xoa sky cu
+	for _,v in ipairs(Lighting:GetChildren()) do
+		if v:IsA("Sky") then
+			v:Destroy()
+		end
+	end
 
-    -- xóa toàn bộ sky khác
-    for _,v in ipairs(Lighting:GetChildren()) do
-        if v:IsA("Sky") then
-            v:Destroy()
-        end
-    end
+	local sky = Instance.new("Sky")
+	sky.Name = SKY_NAME
 
-    local sky = Instance.new("Sky")
-    sky.Name = SKY_NAME
-    sky.SkyboxBk = "rbxassetid://159454299" -- galaxy
-    sky.SkyboxDn = "rbxassetid://159454296"
-    sky.SkyboxFt = "rbxassetid://159454293"
-    sky.SkyboxLf = "rbxassetid://159454286"
-    sky.SkyboxRt = "rbxassetid://159454300"
-    sky.SkyboxUp = "rbxassetid://159454288"
-    sky.Parent = Lighting
+	-- Beach / Sea Skybox
+	sky.SkyboxBk = "rbxassetid://153582764"
+	sky.SkyboxDn = "rbxassetid://153582762"
+	sky.SkyboxFt = "rbxassetid://153582761"
+	sky.SkyboxLf = "rbxassetid://153582759"
+	sky.SkyboxRt = "rbxassetid://153582758"
+	sky.SkyboxUp = "rbxassetid://153582757"
 
-    Lighting.Brightness = 2
-    Lighting.GlobalShadows = false
+	sky.Parent = Lighting
+
+	Lighting.Brightness = 2
+	Lighting.GlobalShadows = false
 end
 
--- HARD LOCK: server reset bao nhiêu lần cũng vô dụng
-RunService.Heartbeat:Connect(function()
-    forceGalaxySky()
+-- chay khi server start
+applyBeachSky()
+
+-- neu ai xoa sky -> add lai ngay
+Lighting.ChildRemoved:Connect(function(obj)
+	if obj:IsA("Sky") then
+		task.wait()
+		applyBeachSky()
+	end
 end)
-
--- init
-forceGalaxySky()
-
-print("NO TEXTURE TRlET DE + GALAXY SKY HARD LOCKED")
