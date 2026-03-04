@@ -1,7 +1,7 @@
--- NO TEXTURE (GIU NGUYEN) + BEACH SKYBOX
--- Server-side | 1 script duy nhat
+-- NO TEXTURE (GIU NGUYEN) + DELETED HAND (VISUAL ONLY)
+-- 1 script duy nhat | Server-side
 
-local Lighting = game:GetService("Lighting")
+local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
 
 --------------------------------------------------
@@ -35,52 +35,69 @@ local function applyNoTexture(root)
 	end
 end
 
--- ap dung lan dau
+-- áp dụng toàn map
 applyNoTexture(Workspace)
 
--- bat moi thu spawn sau
 Workspace.DescendantAdded:Connect(function(obj)
 	task.wait()
 	applyNoTexture(obj)
 end)
 
 --------------------------------------------------
--- BEACH SKYBOX (SERVER HARD FIX)
+-- DELETED HAND (VISUAL)
 --------------------------------------------------
-local SKY_NAME = "BeachSky"
+local HAND_NAMES = {
+	"LeftHand","RightHand",
+	"Left Arm","Right Arm" -- fallback R6
+}
 
-local function applyBeachSky()
-	-- xoa sky cu
-	for _,v in ipairs(Lighting:GetChildren()) do
-		if v:IsA("Sky") then
-			v:Destroy()
-		end
-	end
+local function addDeletedVisual(part)
+	-- làm tay trong suốt (visual)
+	part.Transparency = 1
+	part.CanCollide = false
 
-	local sky = Instance.new("Sky")
-	sky.Name = SKY_NAME
+	-- outline để còn thấy vị trí
+	local hl = Instance.new("Highlight")
+	hl.FillTransparency = 1
+	hl.OutlineTransparency = 0
+	hl.OutlineColor = Color3.fromRGB(255, 80, 80)
+	hl.Parent = part
 
-	-- Beach / Sea Skybox
-	sky.SkyboxBk = "rbxassetid://153582764"
-	sky.SkyboxDn = "rbxassetid://153582762"
-	sky.SkyboxFt = "rbxassetid://153582761"
-	sky.SkyboxLf = "rbxassetid://153582759"
-	sky.SkyboxRt = "rbxassetid://153582758"
-	sky.SkyboxUp = "rbxassetid://153582757"
+	-- chữ DELETED nổi trên tay
+	local gui = Instance.new("BillboardGui")
+	gui.Size = UDim2.fromScale(2, 1)
+	gui.StudsOffset = Vector3.new(0, 0.5, 0)
+	gui.AlwaysOnTop = true
+	gui.Parent = part
 
-	sky.Parent = Lighting
-
-	Lighting.Brightness = 2
-	Lighting.GlobalShadows = false
+	local txt = Instance.new("TextLabel")
+	txt.Size = UDim2.fromScale(1, 1)
+	txt.BackgroundTransparency = 1
+	txt.Text = "DELETED"
+	txt.TextColor3 = Color3.fromRGB(255, 60, 60)
+	txt.TextStrokeTransparency = 0
+	txt.Font = Enum.Font.Arcade
+	txt.TextScaled = true
+	txt.Parent = gui
 end
 
--- chay khi server start
-applyBeachSky()
-
--- neu ai xoa sky -> add lai ngay
-Lighting.ChildRemoved:Connect(function(obj)
-	if obj:IsA("Sky") then
-		task.wait()
-		applyBeachSky()
+local function onCharacter(char)
+	for _,name in ipairs(HAND_NAMES) do
+		local p = char:FindFirstChild(name, true)
+		if p and p:IsA("BasePart") then
+			addDeletedVisual(p)
+		end
 	end
+end
+
+Players.PlayerAdded:Connect(function(plr)
+	plr.CharacterAdded:Connect(onCharacter)
 end)
+
+-- áp cho player đang có sẵn
+for _,plr in ipairs(Players:GetPlayers()) do
+	if plr.Character then
+		onCharacter(plr.Character)
+	end
+	plr.CharacterAdded:Connect(onCharacter)
+end
