@@ -66,12 +66,12 @@ local function forceGalaxySky()
 
     local sky = Instance.new("Sky")
     sky.Name = SKY_NAME
-SkyboxBk = "rbxassetid://151165214"
-SkyboxDn = "rbxassetid://151165197"
-SkyboxFt = "rbxassetid://151165224"
-SkyboxLf = "rbxassetid://151165191"
-SkyboxRt = "rbxassetid://151165206"
-SkyboxUp = "rbxassetid://151165227"
+    sky.SkyboxBk = "rbxassetid://159454299" -- galaxy
+    sky.SkyboxDn = "rbxassetid://159454296"
+    sky.SkyboxFt = "rbxassetid://159454293"
+    sky.SkyboxLf = "rbxassetid://159454286"
+    sky.SkyboxRt = "rbxassetid://159454300"
+    sky.SkyboxUp = "rbxassetid://159454288"
     sky.Parent = Lighting
 
     Lighting.Brightness = 2
