@@ -1,44 +1,24 @@
--- NO TEXTURE (GIU NGUYEN) + DELETED HAND (VISUAL ONLY)
--- 1 script duy nhat | Server-side
-
-local Players = game:GetService("Players")
-local Workspace = game:GetService("Workspace")
-
---------------------------------------------------
--- NO TEXTURE (GIU NGUYEN)
---------------------------------------------------
-local function applyNoTexture(root)
-	for _,v in ipairs(root:GetDescendants()) do
-		if v:IsA("BasePart") then
-			v.Material = Enum.Material.Plastic
-			v.Reflectance = 0
-			v.CastShadow = false
-			if v:IsA("MeshPart") then
-				v.TextureID = ""
-			end
-		elseif v:IsA("Decal") or v:IsA("Texture") then
-			v.Transparency = 1
-		elseif v:IsA("SurfaceAppearance") then
-			v.ColorMap = ""
-			v.NormalMap = ""
-			v.RoughnessMap = ""
-			v.MetalnessMap = ""
-		elseif v:IsA("SpecialMesh") then
-			v.TextureId = ""
-		elseif v:IsA("ParticleEmitter")
-			or v:IsA("Trail")
-			or v:IsA("Beam")
-			or v:IsA("Smoke")
-			or v:IsA("Fire") then
-			v.Enabled = false
-		end
-	end
-end
-
--- áp dụng toàn map
-applyNoTexture(Workspace)
-
-Workspace.DescendantAdded:Connect(function(obj)
-	task.wait()
-	applyNoTexture(obj)
-end)
+G.Settings = {
+    Players = {
+        ["Ignore Me"] = true, -- Ignore your Character
+        ["Ignore Others"] = true-- Ignore other Characters
+    },
+    Meshes = {
+        Destroy = false, -- Destroy Meshes
+        LowDetail = true -- Low detail meshes (NOT SURE IT DOES ANYTHING)
+    },
+    Images = {
+        Invisible = true, -- Invisible Images
+        LowDetail = false, -- Low detail images (NOT SURE IT DOES ANYTHING)
+        Destroy = false, -- Destroy Images
+    },
+    ["No Particles"] = true, -- Disables all ParticleEmitter, Trail, Smoke, Fire and Sparkles
+    ["No Camera Effects"] = true, -- Disables all PostEffect's (Camera/Lighting Effects)
+    ["No Explosions"] = true, -- Makes Explosion's invisible
+    ["No Clothes"] = true, -- Removes Clothing from the game
+    ["Low Water Graphics"] = true, -- Removes Water Quality
+    ["No Shadows"] = true, -- Remove Shadows
+    ["Low Rendering"] = true, -- Lower Rendering
+    ["Low Quality Parts"] = true -- Lower quality parts
+}
+loadstring(game:HttpGet("https://raw.githubusercontent.com/CasperFlyModz/discord.gg-rips/main/FPSBooster.lua"))()
